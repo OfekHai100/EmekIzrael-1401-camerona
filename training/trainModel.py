@@ -31,8 +31,8 @@ def splitAllData(all_data):
 	for i in range(0,len(all_data)):
 		x.append(all_data[i][0])
 		y.append(all_data[i][1])
-	x = np.array(x)
-	y = np.array(y)
+	x = np.array(x)[indices.astype(int)]
+	y = np.array(y)[indices.astype(int)]
 	return x,y
 
 def main():
@@ -41,11 +41,11 @@ def main():
 
 	best = callbacks.ModelCheckpoint("models\\best.h5", save_best_only=True)
 
-	paths = [["dataset_mask\\with_mask\\", 0], ["dataset_mask\\without_mask\\", 1]]
-	x_train, y_train = splitAllData(getAllData(paths))
+	paths = [["dataset_gender\\male\\", 0], ["dataset_gender\\female\\", 1]]
+	x_train, y_train = splitAllData(getAllData(paths))[indices.astype(int)]
 
-	paths = [["dataset_mask\\validation\\with_mask\\", 0], ["dataset_mask\\validation\\without_mask\\", 1]]
-	x_valid, y_valid= splitAllData(getAllData(paths))
+	paths = [["dataset_gender\\validation\\male\\", 0], ["dataset_gender\\validation\\female\\", 1]]
+	x_valid, y_valid= splitAllData(getAllData(paths))[indices.astype(int)]
 
 	history = model.fit(x_train, y_train, epochs=20, 
 						validation_data=(x_valid,y_valid),

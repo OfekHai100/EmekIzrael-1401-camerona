@@ -37,7 +37,7 @@ def main():
 	model_path = 'models\\best.h5'
 	model = models.load_model(model_path)
 
-	paths = [["dataset_mask\\test\\with_mask\\", 0], ["dataset_mask\\test\\without_mask\\", 1]]
+	paths = [["dataset_gender\\test\\male\\", 0], ["dataset_gender\\test\\female\\", 1]]
 	x_test, y_test= splitAllData(getAllData(paths))
 
 	loss, acc = model.evaluate(x_test, y_test)
