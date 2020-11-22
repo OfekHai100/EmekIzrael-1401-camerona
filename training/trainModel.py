@@ -4,8 +4,8 @@ import cv2
 import os
 import random
 
-#with mask = 0
-#without mask = 1
+#with mask = 1
+#without mask = 0
 
 def getAllData(paths):
 	all_data = []
@@ -14,11 +14,7 @@ def getAllData(paths):
 		for i in range(1, goal+1):
 			add = []
 			img = cv2.imread(path+str(i)+'.jpg')
-			img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
 			img = cv2.resize(img, (64,64))/255
-			img.reshape(img, (64,64,-1))
-			print(img.shape)
-			is_wearing = num
 			add.append(img)
 			add.append(num)
 			all_data.append(add)
@@ -41,10 +37,10 @@ def main():
 
 	best = callbacks.ModelCheckpoint("models\\best.h5", save_best_only=True)
 
-	paths = [["dataset_mask\\with_mask\\", 0], ["dataset_mask\\without_mask\\", 1]]
+	paths = [["dataset_mask\\with_mask\\", 1], ["dataset_mask\\without_mask\\", 0]]
 	x_train, y_train = splitAllData(getAllData(paths))
 
-	paths = [["dataset_mask\\validation\\with_mask\\", 0], ["dataset_mask\\validation\\without_mask\\", 1]]
+	paths = [["dataset_mask\\validation\\with_mask\\", 1], ["dataset_mask\\validation\\without_mask\\", 0]]
 	x_valid, y_valid= splitAllData(getAllData(paths))
 
 	history = model.fit(x_train, y_train, epochs=20, 
