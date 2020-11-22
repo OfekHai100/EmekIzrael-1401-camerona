@@ -1,11 +1,11 @@
-from tensorflow.keras import models
+from tensorflow.keras import models, callbacks
 import numpy as np
 import cv2
 import os
 import random
 
-#with mask = 1
-#without mask = 0
+#female = 1
+#male = 0
 
 def getAllData(paths):
 	all_data = []
@@ -14,9 +14,7 @@ def getAllData(paths):
 		for i in range(1, goal+1):
 			add = []
 			img = cv2.imread(path+str(i)+'.jpg')
-			img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
 			img = cv2.resize(img, (64,64))/255
-			is_wearing = num
 			add.append(img)
 			add.append(num)
 			all_data.append(add)
@@ -37,22 +35,13 @@ def main():
 	model_path = 'models\\best.h5'
 	model = models.load_model(model_path)
 
-	paths = [["dataset_gender\\test\\male\\", 0], ["dataset_gender\\test\\female\\", 1]]
-	x_test, y_test= splitAllData(getAllData(paths))
+	test_paths = [["dataset_gender\\test\\male\\", 0], ["dataset_gender\\test\\female\\", 1]]
+
+	x_test, y_test = splitAllData(getAllData(test_paths))
 
 	loss, acc = model.evaluate(x_test, y_test)
 	print("loss: {:.2f} accuracy: {:.2f}%".format(loss, acc*100))
-
-	new_x = x_test[0:10]
-	new_y = y_test[0:10]
-	predictions = model.predict(new_x)
-
-	for i in range(0, 10):
-		prediction = predictions[i]
-		print (prediction, new_y[i])
-		cv2.imshow('a', new_x[i])
-		cv2.waitKey(0)
-		cv2.destroyAllWindows()
+		
 
 if __name__ == '__main__':
 	main()
