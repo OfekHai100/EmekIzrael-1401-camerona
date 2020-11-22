@@ -15,6 +15,6 @@ class maskDetector():
 		toRet = []
 		for i in range(0, len(check)):
 			print(predictions[i])
-			if predictions[i] > self.conf_th:
+			if 1 - predictions[i] > self.conf_th:
 				toRet.append([faces[i][0], faces[i][1]])
 		return toRet
