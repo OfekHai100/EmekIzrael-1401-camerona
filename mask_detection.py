@@ -13,8 +13,10 @@ class maskDetector():
 		check = np.array(check)
 		predictions = self.model.predict(check)
 		toRet = []
+		toRet2 = []
 		for i in range(0, len(check)):
 			print(predictions[i])
 			if 1 - predictions[i] > self.conf_th:
 				toRet.append([faces[i][0], faces[i][1]])
-		return toRet
+				toRet2.append(check[i])
+		return toRet, np.array(toRet2)
