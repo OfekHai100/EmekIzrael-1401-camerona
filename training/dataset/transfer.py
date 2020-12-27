@@ -1,30 +1,26 @@
 import os
+from Coffe import *
 
 def main():
-    path = "all_data\\"
-    dst = "dest\\"
-    folders = os.listdir(path)
-    i = 1
-    for folder in folders:
-    	print(folder)
-    	new_pth = os.path.join(path, folder)
-    	images = os.listdir(new_pth)
-    	for image in images:
-    		input_path = os.path.join(new_pth, image)
-    		output_path = os.path.join(dst, str(i)+'.jpg')
-    		os.rename(input_path, output_path)
-    		i += 1
-
-    """
-    i = len(os.listdir(dst)) + 1
-    break_at = int(input("how much photos to transfer? "))
-    for image_path in images:
-        if i == break_at:
-            break
-        input_path = os.path.join(path, image_path)
-        output_path = os.path.join(dst, str(i)+'.jpg')
-        os.rename(input_path, output_path)
-        i += 1"""
+	face_detector = Coffe()
+	path = "dest\\"
+	dst = "good\\"
+	i = len(os.listdir(dst)) + 1
+	images = os.listdir(path)
+	print(len(images))
+	for image in images:
+		input_path = os.path.join(path, image)
+		im = cv2.imread(input_path)
+		cv2.imshow("cool", im)
+		cv2.waitKey(1)
+		f = input()
+		if len(f) == 0:
+			output_path = os.path.join(dst, str(i)+'.jpg')
+			os.rename(input_path, output_path)
+			i += 1
+		else:
+			os.remove(input_path)
+	cv2.destroyAllWindows()
 
 if __name__ == '__main__':
     main()
