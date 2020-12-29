@@ -76,26 +76,30 @@ def main():
 	print("val data loaded")
 
 	print("\n\nsorting train data")
-	train_data = splitArrayToArrays(dataFromFile(train_text), 450)
+	train_data = splitArrayToArrays(dataFromFile(train_text), 750)
 	print("train data sorted")
 
 	best_models = []
 
-	cnt = 1
-	l = len(train_data)
-	for data in train_data:
-		print("\n\niteration {0}/{1}".format(cnt, l))
-		print("loading train data")
-		train_x, train_y_guess, train_y_x, train_y_y = buildData(data)
-		print("train data loaded")
+	while True:
+		cnt = 1
+		l = len(train_data)
+		for data in train_data:
+			print("\n\niteration {0}/{1}".format(cnt, l))
+			print("loading train data")
+			train_x, train_y_guess, train_y_x, train_y_y = buildData(data)
+			print("train data loaded")
 
-		history = model.fit(train_x,
-						[train_y_guess, train_y_x, train_y_y],
-						epochs=8, 
-						validation_data=(val_x, [val_y_guess, val_y_x, val_y_y]),
-						callbacks=[best_callback, wandb_callback])
-		best_models.append(models.load_model(save_at))
-		cnt += 1
+			history = model.fit(train_x,
+							[train_y_guess, train_y_x, train_y_y],
+							epochs=8, 
+							validation_data=(val_x, [val_y_guess, val_y_x, val_y_y]),
+							callbacks=[best_callback, wandb_callback],
+							batch_size=3)
+			best_models.append(models.load_model(save_at))
+			cnt += 1
+		if input("run another? (y for yes): ") != 'y':
+			break
 
 	##deleting unused data
 	val_x, val_y_guess, val_y_x, val_y_y = 0,0,0,0
