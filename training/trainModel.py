@@ -31,7 +31,25 @@ def buildData(data):
 		y_y.append(y2)
 	return x, y_guess, y_x, y_y
 
+def dataFromFile(path):
+	f = open(path, 'r')
+	ret = f.read().split('\n')
+	f.close()
+	return ret
 
+def splitArrayToArrays(arr, am):
+	l = len(arr)
+	to_ret = []
+	i = 0
+	cnt = 0
+	while i < l:
+		cnt += 1
+		a = []
+		while i < am*cnt and i < l:
+			a.append(arr[i])
+			i+=1
+		to_ret.append(a)
+	return to_ret
 
 def main():
 	wandb.init(project="face_detector")
@@ -46,28 +64,12 @@ def main():
 
 	model = models.load_model(model_path)
 
-	f = open(val_text, 'r')
-	val_data = f.read().split('\n')
-	f.close()
+	val_data = dataFromFile(val_text)
 	val_x, val_y_guess, val_y_x, val_y_y = buildData(val_data)
 
-	f = open(train_text, 'r')
-	train_data1 = f.read().split('\n')
-	f.close()
-	train_data = []
-	l = len(train_data1)
-	i = 0
-	cnt = 0
-	while i < l:
-		cnt+=1
-		a = []
-		while i < 1000*cnt and i < l:
-			a.append(train_data1[i])
-			i += 1
-		train_data.append(a)
-		i += 1
+	train_data1 = 
+	train_data = splitArrayToArrays(dataFromFile(train_text), 750)
 
-	train_data1 = 0
 	best_models = []
 
 	for data in train_data:
@@ -80,14 +82,11 @@ def main():
 						callbacks=[best, wandb_callback])
 		best_models.append(models.load_model(save_at))
 
+	##deleting unused data
 	val_x, val_y_guess, val_y_x, val_y_y = 0,0,0,0
-	train_x, train_y_guess, train_y_x, train_y_y = 0,0,0,0
 	train_data = 0
 
-	f = open(test_text, 'r')
-	test_data = f.read().split('\n')
-	f.close()
-	test_x, test_y_guess, test_y_x, test_y_y = buildData(test_text)
+	test_x, test_y_guess, test_y_x, test_y_y = buildData(dataFromFile(test_text))
 	best_acc = 0
 	best_model = None
 	for model in best_models:
@@ -95,7 +94,6 @@ def main():
 		if acc > best_acc:
 			best_acc = acc
 			best_model = model
-
 	model.save(save_at)
 
 if __name__ == '__main__':
