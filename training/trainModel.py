@@ -16,19 +16,23 @@ def buildData(data):
 		x.append(img)
 		l = l[1:]
 		y1 = np.zeros(20)
-		y = []
-		y2 = []
+		y = np.zeros(40)#x1,x2
+		y2 = np.zeros(40)#y1,y1
+		cnt = 0
 		for points in l:
 			points = points.split(',')
-			y.append(float(points[0]))
-			y.append(float(points[2]))
-			y2.append(float(points[1]))
-			y2.append(float(points[3]))
-		for i in range(len(y)//2):
+			y[cnt] = float(points[0])
+			y[cnt+1] = float(points[2])
+			y2[cnt] = float(points[1])
+			y2[cnt+1] = float(points[3])
+			cnt += 2
+		for i in range(0,cnt//2):
 			y1[i] = 1
 		y_guess.append(y1)
 		y_x.append(y)
 		y_y.append(y2)
+	x, y_guess, y_x, y_y = np.array(x), np.array(y_guess), np.array(y_x), np.array(y_y)
+	print(x.shape, y_guess.shape, y_x.shape, y_y.shape)
 	return x, y_guess, y_x, y_y
 
 def dataFromFile(path):
@@ -62,36 +66,50 @@ def main():
 	best_callback = callbacks.ModelCheckpoint(save_at, save_best_only=True)
 	wandb_callback = WandbCallback(data_type="images")
 
+	print("\n\nloding model")
 	model = models.load_model(model_path)
+	print("model loaded")
 
+	print("\n\nloading val data")
 	val_data = dataFromFile(val_text)
 	val_x, val_y_guess, val_y_x, val_y_y = buildData(val_data)
+	print("val data loaded")
 
-	train_data1 = 
-	train_data = splitArrayToArrays(dataFromFile(train_text), 750)
+	print("\n\nsorting train data")
+	train_data = splitArrayToArrays(dataFromFile(train_text), 450)
+	print("train data sorted")
 
 	best_models = []
 
+	cnt = 1
+	l = len(train_data)
 	for data in train_data:
+		print("\n\niteration {0}/{1}".format(cnt, l))
+		print("loading train data")
 		train_x, train_y_guess, train_y_x, train_y_y = buildData(data)
+		print("train data loaded")
 
 		history = model.fit(train_x,
 						[train_y_guess, train_y_x, train_y_y],
 						epochs=8, 
-						validation_data=(val_x,[val_y_guess, val_y_x, val_y_y]),
-						callbacks=[best, wandb_callback])
+						validation_data=(val_x, [val_y_guess, val_y_x, val_y_y]),
+						callbacks=[best_callback, wandb_callback])
 		best_models.append(models.load_model(save_at))
+		cnt += 1
 
 	##deleting unused data
 	val_x, val_y_guess, val_y_x, val_y_y = 0,0,0,0
 	train_data = 0
 
+	print("\n\nloading test data")
 	test_x, test_y_guess, test_y_x, test_y_y = buildData(dataFromFile(test_text))
+	print("test data loaded")
 	best_acc = 0
 	best_model = None
 	for model in best_models:
 		loss, acc = model.evaluate(test_x, [test_y_guess, test_y_x, test_y_y])
 		if acc > best_acc:
+			print("accuracy: {0}".format(acc))
 			best_acc = acc
 			best_model = model
 	model.save(save_at)

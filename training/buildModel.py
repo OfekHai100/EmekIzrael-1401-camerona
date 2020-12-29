@@ -34,6 +34,7 @@ def buildModel():
 	ssd = keras.layers.Conv2D(256, 3, activation='relu', padding='same', name = "ssd_block6_conv2")(ssd)#
 
 	####output layers
+	ssd = keras.layers.Flatten()(ssd)
 	class_output = keras.layers.Dense(20, activation='sigmoid', name='output_class')(ssd)
 	loc_output1 = keras.layers.Dense(40, activation='relu', name='output_loc_x')(ssd)
 	loc_output2 = keras.layers.Dense(40, activation='relu', name='output_loc_y')(ssd)
