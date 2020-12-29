@@ -26,6 +26,23 @@ class Coffe():
 				cnt += 1
 		return cnt
 
+	def getBbox(self, img):
+		(h, w) = img.shape[:2]
+
+		blob = cv2.dnn.blobFromImage(img, 1.0, (300, 300), (104.0, 177.0, 123.0))
+
+		self.net.setInput(blob)
+		detections = self.net.forward()[0][0]
+
+		bboxes = []
+
+		for i in range(0, detections.shape[0]):
+			confidence = detections[i][2]
+			if confidence > self.conf_th:
+				box = detections[i, 3:7] % np.array([1,1,1,1]) * np.array([w, h, w, h])
+				bboxes.append(box)
+		return bboxes
+
 	def detect_faces(self, img):
 		(h, w) = img.shape[:2]
 
