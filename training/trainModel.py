@@ -1,8 +1,6 @@
 from tensorflow.keras import models, callbacks
 import numpy as np
 import cv2
-import wandb
-from wandb.keras import WandbCallback
 
 def buildData(data):
 	x = []
@@ -56,7 +54,6 @@ def splitArrayToArrays(arr, am):
 	return to_ret
 
 def main():
-	wandb.init(project="face_detector")
 	model_path = 'models\\base_model.h5'
 	save_at = "models\\best.h5"
 	val_text = "dataset\\val.txt"
@@ -64,7 +61,6 @@ def main():
 	test_text = "dataset\\test.txt"
 
 	best_callback = callbacks.ModelCheckpoint(save_at, save_best_only=True)
-	wandb_callback = WandbCallback(data_type="images")
 
 	print("\n\nloding model")
 	model = models.load_model(model_path)
@@ -81,25 +77,22 @@ def main():
 
 	best_models = []
 
-	while True:
-		cnt = 1
-		l = len(train_data)
-		for data in train_data:
-			print("\n\niteration {0}/{1}".format(cnt, l))
-			print("loading train data")
-			train_x, train_y_guess, train_y_x, train_y_y = buildData(data)
-			print("train data loaded")
+	cnt = 1
+	l = len(train_data)
+	for data in train_data:
+		print("\n\niteration {0}/{1}".format(cnt, l))
+		print("loading train data")
+		train_x, train_y_guess, train_y_x, train_y_y = buildData(data)
+		print("train data loaded")
 
-			history = model.fit(train_x,
-							[train_y_guess, train_y_x, train_y_y],
-							epochs=8, 
-							validation_data=(val_x, [val_y_guess, val_y_x, val_y_y]),
-							callbacks=[best_callback, wandb_callback],
-							batch_size=3)
-			best_models.append(models.load_model(save_at))
-			cnt += 1
-		if input("run another? (y for yes): ") != 'y':
-			break
+		history = model.fit(train_x,
+						[train_y_guess, train_y_x, train_y_y],
+						epochs=8, 
+						validation_data=(val_x, [val_y_guess, val_y_x, val_y_y]),
+						callbacks=[best_callback],
+						batch_size=3)
+		best_models.append(models.load_model(save_at))
+		cnt += 1
 
 	##deleting unused data
 	val_x, val_y_guess, val_y_x, val_y_y = 0,0,0,0

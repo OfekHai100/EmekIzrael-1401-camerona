@@ -41,7 +41,7 @@ def buildModel():
 
 	model = keras.Model(inputs=vgg16_backbone.input, outputs=[class_output, loc_output1, loc_output2])
 	opt = keras.optimizers.Adam()
-	model.compile(optimizer = opt, loss = ['binary_crossentropy', 'mean_squared_error', 'mean_squared_error'])
+	model.compile(optimizer = opt, loss = ['binary_crossentropy', 'mean_squared_error', 'mean_squared_error'], metrics=["accuracy"])
 
 	return model
 
