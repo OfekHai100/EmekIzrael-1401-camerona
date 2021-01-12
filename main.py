@@ -2,64 +2,60 @@ from Coffe import *
 from mask_detection import *
 from gender_detection import *
 from use_speakers import *
-import threading
 import datetime
 import time
+
+ATT_LIMIT = 1
 
 FACES_CONF_TH = 0.9
 MASK_CONF_TH = 0.9
 
 BOUNDING_BOX_COLOR = (0,0,255)
 TEXT_COLOR = (255,255,255)
+TEXT_COLOR_OVER_LIMIT = (0,0,255)
 LINE_THICKNESS = 2
 FONT = cv2.FONT_HERSHEY_SIMPLEX
 
-def drawNoMasks(no_maskers, img):
-	for no_mask in no_maskers:
-		cv2.rectangle(img, no_mask[0], no_mask[1], BOUNDING_BOX_COLOR, LINE_THICKNESS)
-		loc = (no_mask[0][0], no_mask[1][1])
+MASK_PATH = 'models/mask-detection.h5'
+GENDER_PATH = 'models/gender-detection.h5'
+
+def drawNoMasks(faces, img):
+	cnt = 1
+	txt_clr = TEXT_COLOR
+	for face in faces:
+		#play(face.gender) - play sound with face features
+		cv2.rectangle(img, face.start_pnt, face.end_pnt, BOUNDING_BOX_COLOR, LINE_THICKNESS)
 		text = 'F'
-		if no_mask[2]:
+		if face.gender:
 			text = 'M'
-			playing = threading.Thread(target=play, args=(True,))
-		else:
-			playing = threading.Thread(target=play, args=(False,))
-		playing.start()
-		#playing.join()
-		cv2.putText(img, text, loc, FONT, 1, TEXT_COLOR, LINE_THICKNESS)
-		#time.sleep(10)
+		if cnt > ATT_LIMIT:
+			txt_clr = TEXT_COLOR_OVER_LIMIT
+		text += ' ' + str(cnt)
+		cnt+=1
+		cv2.putText(img, text, (face.start_pnt[0], face.end_pnt[1]), FONT, 1, txt_clr, LINE_THICKNESS)
+	#play sound saying 'please wear a mask'
 		
-		
+def tooMuchPeople(frame):
+	filename = "over limit/" + str(datetime.datetime.now()).replace(':', '-').replace('.', '-') + ".jpg"
+	cv2.imwrite(filename, frame)
+	#play voice that says there are too many people
 
 def main():
-	att_limit = int(open("attendance_limit.txt", "r").read())
-	model_path = 'models/mask-detection.h5'
-	mask_detector = maskDetector(MASK_CONF_TH, model_path)
+	mask_detector = maskDetector(MASK_CONF_TH, MASK_PATH)
 	face_detector = Coffe(FACES_CONF_TH)
-	gender_detector = genderDetector()
+	gender_detector = genderDetector(GENDER_PATH)
 	cap = cv2.VideoCapture(0)
-	timer = 10.0 #set one minute for saving image and using speakers
 	
 	while True:
-		started_timing = time.perf_counter() #starting timer
-		faces = []
-		faces_noMask = []
 		_, frame = cap.read()
-		faces = face_detector.detect_faces(frame)
-		text_color = TEXT_COLOR
+		faces = face_detector.detectFaces(frame)
 		if len(faces) > 0:
-			timer += time.perf_counter() - started_timing #calculating elapsed time from last 
-			if len(faces) >= att_limit:
-				text_color = (0, 0, 255)
-				if timer >= 10: #10 seconds has passed
-					filename = "over limit/" + str(datetime.datetime.now()).replace(':', '-').replace('.', '-') + ".jpg"
-					cv2.imwrite(filename, frame)
-					timer = 0.0 #reseting the timer
-			faces_loc, faces = mask_detector.checkNonmaskers(faces)
+			if len(faces) > ATT_LIMIT:
+				tooMuchPeople(frame)
+			faces = mask_detector.checkNonmaskers(faces)
 			if len(faces) > 0:
-				faces_loc = gender_detector.checkGenders(faces, faces_loc)
-				cv2.putText(frame, str(len(faces)), (faces_loc[0][0][0], faces_loc[0][1][1] - 30), FONT, 1, text_color, LINE_THICKNESS)
-				drawNoMasks(faces_loc, frame)
+				faces = gender_detector.checkGenders(faces)
+				drawNoMasks(faces, frame)
 		cv2.imshow('show', frame)
 		if cv2.waitKey(1) & 0xFF == ord('q'):
 			break
