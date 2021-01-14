@@ -1,8 +1,8 @@
 import os
 
 def main():
-	path = "mid\\"
-	dst = "val\\"
+	path = "val\\"
+	dst = "all\\"
 	i = len(os.listdir(dst)) + 1
 	images = os.listdir(path)
 	print(len(images))
