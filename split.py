@@ -1,4 +1,5 @@
 import os
+import sys
 
 def write(path, data):
 	f = open(path, "w+")
@@ -6,19 +7,28 @@ def write(path, data):
 	f.write(data)
 	f.close()
 
+"""
+excpects:
+split.py all_data.txt train.txt percentage_in_float test.txt percentage_in_float val.txt
+"""
 def main():
-	data_file = "data\\all.txt"
-	val = "data\\val.txt"
-	test = "data\\test.txt"
-	train = "data\\train.txt"
+	data = sys.argv[1:]
+	data_file = data[0]
+	train = data[1]
+	train_am = float(data[2])
+	test = data[3]
+	test_am = float(data[4])
+	val = data[5]
 	f = open(data_file, 'r')
 	data = f.read().split('\n')
 	f.close()
 	l = len(data)
-	val1, test1, train1 = data[:int(l*0.1)], data[int(l*0.1):int(l*0.25)], data[int(l*0.25):]
-	write(val, val1)
-	write(test, test1)
-	write(train, train1)
+	test_data = data[:int(l*test_am)]
+	train_data = data[int(l*test_am):int(l*(test_am+train_am))]
+	val_data = data[int(l*(test_am+train_am)):]
+	write(val, val_data)
+	write(test, test_data)
+	write(train, train_data)
 
 if __name__ == '__main__':
     main()
