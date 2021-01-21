@@ -1,6 +1,10 @@
 import os
 import sys
 
+"""
+excpects:
+transfer.py input_folder output_folder
+"""
 def main():
 	data = sys.argv[1:]
 	print(data)
