@@ -1,6 +1,8 @@
 import sys
 import os
 import cv2
+from time import time
+import numpy as np
 
 class Coffe():
 	def __init__(self, con_th = 0.8):
