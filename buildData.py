@@ -21,7 +21,7 @@ def main():
 		for img in images:
 			data.append(key+img+' '+folder_val[key])
 	random.shuffle(data)
-	with open(all_file, 'a+') as f:
+	with open(all_file, 'w+') as f:
 		f.write('\n'.join(data))
 
 if __name__ == '__main__':
