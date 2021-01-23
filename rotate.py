@@ -2,6 +2,7 @@ import cv2
 import imutils
 import os
 import sys
+import numpy as np
 
 """
 excpect:
@@ -9,8 +10,8 @@ rotate.py input_folder output_folder
 """
 def main():
 	data = sys.argv[1:]
-	input_path = sys.argv[0]
-	dst_path = sys.argv[1]
+	input_path = data[0]
+	dst_path = data[1]
 	images = os.listdir(input_path)
 	i = len(os.listdir(dst_path)) + 1
 	j = 1

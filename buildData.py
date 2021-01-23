@@ -16,10 +16,10 @@ def main():
 		folder_val[data[i-1]] = data[i]
 		i+=2
 	data = []
-	for key in mask:
+	for key in folder_val:
 		images = os.listdir(key)
 		for img in images:
-			data.append(key+img+' '+mask[key])
+			data.append(key+img+' '+folder_val[key])
 	random.shuffle(data)
 	with open(all_file, 'a+') as f:
 		f.write('\n'.join(data))
