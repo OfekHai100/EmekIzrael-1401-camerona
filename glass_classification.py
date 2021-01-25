@@ -1,11 +1,11 @@
 from tensorflow.keras import models
 import numpy as np
 
-class maskDetector():
+class glassClassifier():
 	def __init__(self, model_path = "models/glass-model.h5"):
 		self.model = models.load_model(model_path)
 
-	def checkGlossType(self, faces):
+	def checkGlassType(self, faces):
 		#getting only the faces
 		check = []
 		for face in faces:
