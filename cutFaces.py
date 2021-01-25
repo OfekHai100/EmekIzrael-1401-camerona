@@ -38,7 +38,7 @@ class Coffe():
 				if end_point[1] <= start_point[1]:
 					end_point = (end_point[0], h)
 				face = img[start_point[1]:end_point[1], start_point[0]:end_point[0]]
-				face = cv2.resize(face, (64,64))/255
+				face = cv2.resize(face, (64,64))
 				toRet.append(face)
 		return toRet
 
@@ -61,7 +61,7 @@ def main():
 		faces = detector.getFaces(im)
 		for face in faces:
 			output_path = os.path.join(dst_path, str(i)+'.jpg')
-			cv2.imwrite(output_path, img)
+			cv2.imwrite(output_path, face)
 			i += 1
 
 if __name__ == '__main__':
