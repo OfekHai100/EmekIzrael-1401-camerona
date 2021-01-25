@@ -2,7 +2,6 @@ from Coffe import *
 from mask_detection import *
 from gender_detection import *
 from glass_classification import *
-from use_speakers import *
 import datetime
 import time
 
@@ -25,21 +24,19 @@ def drawNoMasks(faces, img):
 	cnt = 1
 	txt_clr = TEXT_COLOR
 	for face in faces:
-		#play(face.gender) - play sound with face features
 		cv2.rectangle(img, face.start_pnt, face.end_pnt, BOUNDING_BOX_COLOR, LINE_THICKNESS)
 		text = 'F'
 		if face.gender:
 			text = 'M'
 		if face.glass:
 			text += ' G'
-		if face.sunglass:
+		elif face.sunglass:
 			text += ' SG'
 		if cnt > ATT_LIMIT:
 			txt_clr = TEXT_COLOR_OVER_LIMIT
 		text += ' ' + str(cnt)
 		cnt+=1
 		cv2.putText(img, text, (face.start_pnt[0], face.end_pnt[1]), FONT, 1, txt_clr, LINE_THICKNESS)
-	#play sound saying 'please wear a mask'
 		
 def tooMuchPeople(frame):
 	filename = "over_limit/" + str(datetime.datetime.now()).replace(':', '-').replace('.', '-') + ".jpg"
@@ -52,7 +49,6 @@ def main():
 	gender_detector = genderDetector(GENDER_PATH)
 	glass_classifier = glassClassifier(GLASS_PATH)
 	cap = cv2.VideoCapture(0)
-	
 	while True:
 		_, frame = cap.read()
 		faces = face_detector.detectFaces(frame)

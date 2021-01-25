@@ -12,5 +12,5 @@ class genderDetector():
 		check = np.array(check)
 		predictions = self.model.predict(check)
 		for i in range(0, len(predictions)):
-			faces[i].gender = (predictions[i] < 0.5)
+			faces[i].gender = predictions[i] > 0.5
 		return faces

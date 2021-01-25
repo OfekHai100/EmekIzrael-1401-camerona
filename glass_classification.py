@@ -14,6 +14,6 @@ class glassClassifier():
 		predictions = self.model.predict(check)
 		for i in range(0, len(predictions)):
 			index = np.argmax(predictions[i])
-			faces[i].sunglass = (index == 0)
-			faces[i].glass = (index == 1)
+			faces[i].sunglass = index == 0
+			faces[i].glass = index == 1
 		return faces
