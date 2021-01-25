@@ -10,3 +10,5 @@ class Person():
 		self.start_pnt = startPoint
 		self.end_pnt = endPoint
 		self.gender = gender
+		self.glass = False
+		self.sunglass = False
