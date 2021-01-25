@@ -2,11 +2,11 @@ from tensorflow.keras import models
 import numpy as np
 
 class maskDetector():
-	def __init__(self, con_th = 0.8, model_path = "models/mask-detection.h5"):
+	def __init__(self, model_path = "models/glass-model.h5"):
 		self.model = models.load_model(model_path)
 		self.conf_th = con_th
 
-	def checkNonmaskers(self, faces):
+	def checkGlossType(self, faces):
 		check = []
 		for i in range(0, len(faces)):
 			check.append(faces[i][2])
