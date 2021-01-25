@@ -4,17 +4,16 @@ import numpy as np
 class maskDetector():
 	def __init__(self, model_path = "models/glass-model.h5"):
 		self.model = models.load_model(model_path)
-		self.conf_th = con_th
 
 	def checkGlossType(self, faces):
+		#getting only the faces
 		check = []
-		for i in range(0, len(faces)):
-			check.append(faces[i][2])
+		for face in faces:
+			check.append(face.face)
 		check = np.array(check)
 		predictions = self.model.predict(check)
-		toRet = []
-		for i in range(0, len(check)):
-			print(predictions[i])
-			if predictions[i] > self.conf_th:
-				toRet.append([faces[i][0], faces[i][1]])
-		return toRet
+		for i in range(0, len(predictions)):
+			index = np.argmax(predictions[i])
+			faces[i].sunglass = (index == 0)
+			faces[i].glass = (index == 1)
+		return faces
