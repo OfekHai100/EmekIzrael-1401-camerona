@@ -18,7 +18,7 @@ class Coffe():
 		self.net.setInput(blob)
 		detections = self.net.forward()[0][0]
 
-		toRet = []
+		toRet = People()
 		for i in range(0, detections.shape[0]):
 			confidence = detections[i][2]
 			if confidence > self.conf_th:
@@ -35,5 +35,6 @@ class Coffe():
 					end_point = (end_point[0], h)
 				face = img[start_point[1]:end_point[1], start_point[0]:end_point[0]]
 				face = cv2.resize(face, (64,64))/255
-				toRet.append(Person(face, start_point, end_point))
+				toRet.people.append(Person(start_point, end_point))
+				toRet.faces.append(face)
 		return toRet

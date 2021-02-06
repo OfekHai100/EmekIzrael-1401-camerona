@@ -1,11 +1,9 @@
 from Coffe import *
-from mask_detection import *
-from gender_detection import *
-from glass_classification import *
+from classifiers import *
 import datetime
 import time
 
-ATT_LIMIT = 1
+ATT_LIMIT = 0
 
 FACES_CONF_TH = 0.9
 MASK_CONF_TH = 0.9
@@ -16,14 +14,15 @@ TEXT_COLOR_OVER_LIMIT = (0,0,255)
 LINE_THICKNESS = 2
 FONT = cv2.FONT_HERSHEY_SIMPLEX
 
-MASK_PATH = 'models/mask-detection.h5'
-GENDER_PATH = 'models/gender-detection.h5'
-GLASS_PATH = 'models/glass-model.h5'
+MASK_PATH = 'models/mask.h5'
+GENDER_PATH = 'models/gender.h5'
+GLASS_PATH = 'models/glass.h5'
+BEARD_PATH = 'models/beard.h5'
 
-def drawNoMasks(faces, img):
+def drawNoMasks(people, img):
 	cnt = 1
 	txt_clr = TEXT_COLOR
-	for face in faces:
+	for face in people.people:
 		cv2.rectangle(img, face.start_pnt, face.end_pnt, BOUNDING_BOX_COLOR, LINE_THICKNESS)
 		text = 'F'
 		if face.gender:
@@ -32,6 +31,8 @@ def drawNoMasks(faces, img):
 			text += ' G'
 		elif face.sunglass:
 			text += ' SG'
+		if face.beard:
+			text += ' B'
 		if cnt > ATT_LIMIT:
 			txt_clr = TEXT_COLOR_OVER_LIMIT
 		text += ' ' + str(cnt)
@@ -40,26 +41,30 @@ def drawNoMasks(faces, img):
 		
 def tooMuchPeople(frame):
 	filename = "over_limit/" + str(datetime.datetime.now()).replace(':', '-').replace('.', '-') + ".jpg"
-	cv2.imwrite(filename, frame)
 	#play voice that says there are too many people
+	cv2.imwrite(filename, frame)
 
 def main():
-	mask_detector = maskDetector(MASK_CONF_TH, MASK_PATH)
+	#loading models
 	face_detector = Coffe(FACES_CONF_TH)
-	gender_detector = genderDetector(GENDER_PATH)
+	mask_classifier = maskClassifier(MASK_CONF_TH, MASK_PATH)
+	gender_classifier = genderClassifier(GENDER_PATH)
 	glass_classifier = glassClassifier(GLASS_PATH)
+	beard_classifier = beardClassifier(BEARD_PATH)
+
 	cap = cv2.VideoCapture(0)
 	while True:
 		_, frame = cap.read()
-		faces = face_detector.detectFaces(frame)
-		if len(faces) > 0:
-			if len(faces) > ATT_LIMIT:
+		people = face_detector.detectFaces(frame)
+		if len(people.faces) > 0:
+			if len(people.faces) > ATT_LIMIT:
 				tooMuchPeople(frame)
-			faces = mask_detector.checkNonmaskers(faces)
-			if len(faces) > 0:
-				faces = gender_detector.checkGenders(faces)
-				faces = glass_classifier.checkGlassType(faces)
-				drawNoMasks(faces, frame)
+			people = mask_classifier.checkMask(people)
+			if len(people.faces) > 0:
+				people = gender_classifier.checkGenders(people)
+				people = glass_classifier.checkGlassType(people)
+				people = beard_classifier.checkBeard(people)
+				drawNoMasks(people, frame)
 		cv2.imshow('show', frame)
 		if cv2.waitKey(1) & 0xFF == ord('q'):
 			break
