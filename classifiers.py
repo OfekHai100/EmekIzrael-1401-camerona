@@ -18,42 +18,28 @@ class maskClassifier():
 				toRet.people.append(people.people[i])
 		return toRet
 
-class glassClassifier():
-	#index 0 - sunglass
-	#index 1 - glass
-	#index 2 - nothing
-	def __init__(self, model_path = "models/glass-model.h5"):
-		self.model = models.load_model(model_path)
+class metaData():
+	def __init__(self, glass_path = "models/glass.h5", gender_path = "models/gender.h5", beard_path = "models/beard.h5"):
+		#index 0 - sunglass
+		#index 1 - glass
+		#index 2 - nothing
+		self.glass_model = models.load_model(glass_path)
+		#0 - female
+		#1 - male
+		self.gender_model = models.load_model(gender_path)
+		#0 - no beard
+		#1 - beard
+		self.beard_model = models.load_model(beard_path)
 
-	def checkGlassType(self, people):
+	def getMetaData(self, people):
 		check = np.array(people.faces)
-		predictions = self.model.predict(check)
-		for i in range(0, len(predictions)):
-			index = np.argmax(predictions[i])
+		glass_prediction = self.glass_model.predict(check)
+		gender_prediction = self.gender_model.predict(check)
+		beard_prediction = self.beard_model.predict(check)
+		for i in range(0, len(check)):
+			people.people[i].gender = gender_prediction[i] > 0.5
+			people.people[i].beard = beard_prediction[i] > 0.5
+			index = np.argmax(glass_prediction[i])
 			people.people[i].sunglass = index == 0
 			people.people[i].glass = index == 1
-		return people
-
-class genderClassifier():
-	#1 - male
-	#2 - female
-	def __init__(self, model_path = "models/gender.h5"):
-		self.model = models.load_model(model_path)
-
-	def checkGenders(self, people):
-		check = np.array(people.faces)
-		predictions = self.model.predict(check)
-		for i in range(0, len(predictions)):
-			people.people[i].gender = predictions[i] > 0.5
-		return people
-
-class beardClassifier():
-	def __init__(self, model_path = "models/beard.h5"):
-		self.model = models.load_model(model_path)
-
-	def checkBeard(self, people):
-		check = np.array(people.faces)
-		predictions = self.model.predict(check)
-		for i in range(0, len(predictions)):
-			people.people[i].beard = predictions[i] > 0.5
 		return people

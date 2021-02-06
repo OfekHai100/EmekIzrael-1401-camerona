@@ -3,7 +3,7 @@ from classifiers import *
 import datetime
 import time
 
-ATT_LIMIT = 0
+ATT_LIMIT = 10
 
 FACES_CONF_TH = 0.9
 MASK_CONF_TH = 0.9
@@ -48,9 +48,7 @@ def main():
 	#loading models
 	face_detector = Coffe(FACES_CONF_TH)
 	mask_classifier = maskClassifier(MASK_CONF_TH, MASK_PATH)
-	gender_classifier = genderClassifier(GENDER_PATH)
-	glass_classifier = glassClassifier(GLASS_PATH)
-	beard_classifier = beardClassifier(BEARD_PATH)
+	metadata_models = metaData(GLASS_PATH, GENDER_PATH, BEARD_PATH)
 
 	cap = cv2.VideoCapture(0)
 	while True:
@@ -61,9 +59,7 @@ def main():
 				tooMuchPeople(frame)
 			people = mask_classifier.checkMask(people)
 			if len(people.faces) > 0:
-				people = gender_classifier.checkGenders(people)
-				people = glass_classifier.checkGlassType(people)
-				people = beard_classifier.checkBeard(people)
+				people = metadata_models.getMetaData(people)
 				drawNoMasks(people, frame)
 		cv2.imshow('show', frame)
 		if cv2.waitKey(1) & 0xFF == ord('q'):
