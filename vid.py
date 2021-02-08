@@ -3,6 +3,8 @@ from classifiers import *
 import datetime
 import time
 
+PLAY_FROM = 0#vid.mp4
+
 ATT_LIMIT = 10
 
 FACES_CONF_TH = 0.9
@@ -38,11 +40,6 @@ def drawNoMasks(people, img):
 		text += ' ' + str(cnt)
 		cnt+=1
 		cv2.putText(img, text, (face.start_pnt[0], face.end_pnt[1]), FONT, 1, txt_clr, LINE_THICKNESS)
-		
-def tooMuchPeople(frame):
-	filename = "over_limit/" + str(datetime.datetime.now()).replace(':', '-').replace('.', '-') + ".jpg"
-	#play voice that says there are too many people
-	cv2.imwrite(filename, frame)
 
 def main():
 	#loading models
@@ -50,13 +47,13 @@ def main():
 	mask_classifier = maskClassifier(MASK_CONF_TH, MASK_PATH)
 	metadata_models = metaData(GLASS_PATH, GENDER_PATH, BEARD_PATH)
 
-	cap = cv2.VideoCapture(0)
+	cap = cv2.VideoCapture(PLAY_FROM)
 	while True:
-		_, frame = cap.read()
+		work, frame = cap.read()
+		if not work:
+			break
 		people = face_detector.detectFaces(frame)
 		if len(people.faces) > 0:
-			if len(people.faces) > ATT_LIMIT:
-				tooMuchPeople(frame)
 			people = mask_classifier.checkMask(people)
 			if len(people.faces) > 0:
 				people = metadata_models.getMetaData(people)
