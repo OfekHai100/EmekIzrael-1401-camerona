@@ -48,6 +48,8 @@ def main():
 	metadata_models = metaData(GLASS_PATH, GENDER_PATH, BEARD_PATH)
 
 	cap = cv2.VideoCapture(PLAY_FROM)
+	time_started = time.time()
+	frames = 0
 	while True:
 		work, frame = cap.read()
 		if not work:
@@ -58,9 +60,12 @@ def main():
 			if len(people.faces) > 0:
 				people = metadata_models.getMetaData(people)
 				drawNoMasks(people, frame)
+		frames += 1
 		cv2.imshow('show', frame)
 		if cv2.waitKey(1) & 0xFF == ord('q'):
+			overall_time = time.time() - time_started
 			break
+	print("avg frames pre second: {0}".format(frames/overall_time))
 	cap.release()
 	cv2.destroyAllWindows()
 
