@@ -1,7 +1,7 @@
 from gtts import gTTS 
 
-text = "please wear a mask"
-save_at = "voices/pwam.mp3"
+text = "the"
+save_at = "voices/the.mp3"
 
 lan = 'en'
 
