@@ -16,10 +16,10 @@ TEXT_COLOR_OVER_LIMIT = (0,0,255)
 LINE_THICKNESS = 2
 FONT = cv2.FONT_HERSHEY_SIMPLEX
 
-MASK_PATH = 'models/mask.h5'
-GENDER_PATH = 'models/gender.h5'
-GLASS_PATH = 'models/glass.h5'
-BEARD_PATH = 'models/beard.h5'
+MASK_PATH = 'models/mask.tflite'
+GENDER_PATH = 'models/gender.tflite'
+GLASS_PATH = 'models/glass.tflite'
+BEARD_PATH = 'models/beard.tflite'
 
 def drawNoMasks(people, img):
 	cnt = 1
@@ -44,8 +44,7 @@ def drawNoMasks(people, img):
 def main():
 	#loading models
 	face_detector = Coffe(FACES_CONF_TH)
-	mask_classifier = maskClassifier(MASK_CONF_TH, MASK_PATH)
-	metadata_models = metaData(GLASS_PATH, GENDER_PATH, BEARD_PATH)
+	metadata_models = metaData(MASK_PATH, MASK_CONF_TH, GLASS_PATH, GENDER_PATH, BEARD_PATH)
 
 	cap = cv2.VideoCapture(PLAY_FROM)
 	while True:
@@ -54,10 +53,8 @@ def main():
 			break
 		people = face_detector.detectFaces(frame)
 		if len(people.faces) > 0:
-			people = mask_classifier.checkMask(people)
-			if len(people.faces) > 0:
-				people = metadata_models.getMetaData(people)
-				drawNoMasks(people, frame)
+			people = metadata_models.getMetaData(people)
+			drawNoMasks(people, frame)
 		cv2.imshow('show', frame)
 		if cv2.waitKey(1) & 0xFF == ord('q'):
 			break

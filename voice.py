@@ -16,10 +16,10 @@ TEXT_COLOR_OVER_LIMIT = (0,0,255)
 LINE_THICKNESS = 2
 FONT = cv2.FONT_HERSHEY_SIMPLEX
 
-MASK_PATH = 'models/mask.h5'
-GENDER_PATH = 'models/gender.h5'
-GLASS_PATH = 'models/glass.h5'
-BEARD_PATH = 'models/beard.h5'
+MASK_PATH = 'models/mask.tflite'
+GENDER_PATH = 'models/gender.tflite'
+GLASS_PATH = 'models/glass.tflite'
+BEARD_PATH = 'models/beard.tflite'
 
 def playVoices(people):
 	cnt = 0
