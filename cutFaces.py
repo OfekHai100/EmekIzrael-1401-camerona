@@ -4,6 +4,13 @@ import cv2
 from time import time
 import numpy as np
 
+"""
+
+This code take a directory of images, cut the faces
+ in each image and saves the faces
+
+"""
+
 class Coffe():
 	def __init__(self, con_th = 0.8):
 		tstamp = time()
@@ -54,12 +61,12 @@ def main():
 	images = os.listdir(input_path)
 	print(len(images))
 	detector = Coffe()
-	for image in images:
+	for image in images:#oterating through the images in a given directory
 		full_input_path = os.path.join(input_path, image)
 		img = cv2.imread(full_input_path)
 		im = img
 		faces = detector.getFaces(im)
-		for face in faces:
+		for face in faces:#iterating trough the faces found in image
 			output_path = os.path.join(dst_path, str(i)+'.jpg')
 			cv2.imwrite(output_path, face)
 			i += 1
