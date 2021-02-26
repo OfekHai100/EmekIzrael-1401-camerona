@@ -1,6 +1,9 @@
 from playsound import playsound
 
 def play(person):
+	"""
+	This function is used to play a sound by given meta data
+	"""
 	if person.gender:
 		playsound("voices/man.mp3")
 	else:

@@ -1,5 +1,7 @@
 from gtts import gTTS 
 
+#this code is used to create the voice file
+
 text = "the"
 save_at = "voices/the.mp3"
 
