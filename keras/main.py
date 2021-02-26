@@ -61,6 +61,7 @@ def main():
 		work, frame = cap.read()
 		if not work:
 			#checking if the video ended
+			overall_time = time.time() - time_started
 			break
 		#detecting faces
 		people = face_detector.detectFaces(frame)
@@ -74,7 +75,6 @@ def main():
 		frames += 1
 		cv2.imshow('show', frame)
 		if cv2.waitKey(1) & 0xFF == ord('q'):
-			overall_time = time.time() - time_started
 			break
 	print("avg frames pre second: {0}".format(frames/overall_time))
 	cap.release()
