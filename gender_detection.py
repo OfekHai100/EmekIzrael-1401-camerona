@@ -1,6 +1,9 @@
 from uti import *
 
-class genderDetector():
+class genderClassi():
+	"""
+	This class is the class that uses the gender classifier
+	"""
 	def __init__(self, model_path = "models/gender_best_model.h5"):
 		self.model = models.load_model(model_path)
 
