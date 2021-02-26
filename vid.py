@@ -16,12 +16,18 @@ TEXT_COLOR_OVER_LIMIT = (0,0,255)
 LINE_THICKNESS = 2
 FONT = cv2.FONT_HERSHEY_SIMPLEX
 
+#models paths
 MASK_PATH = 'models/mask.h5'
 GENDER_PATH = 'models/gender.h5'
 GLASS_PATH = 'models/glass.h5'
 BEARD_PATH = 'models/beard.h5'
 
 def drawNoMasks(people, img):
+	"""
+	This function draw the boxes and data about each face in a photo
+	input: the data about the people found, the image
+	output: non
+	"""
 	cnt = 1
 	txt_clr = TEXT_COLOR
 	for face in people.people:
@@ -46,18 +52,23 @@ def main():
 	face_detector = Coffe(FACES_CONF_TH)
 	mask_classifier = maskClassifier(MASK_CONF_TH, MASK_PATH)
 	metadata_models = metaData(GLASS_PATH, GENDER_PATH, BEARD_PATH)
-
+	#loading video data
 	cap = cv2.VideoCapture(PLAY_FROM)
 	time_started = time.time()
 	frames = 0
 	while True:
+		#iterating through the video, frame by frame
 		work, frame = cap.read()
 		if not work:
+			#checking if the video ended
 			break
+		#detecting faces
 		people = face_detector.detectFaces(frame)
 		if len(people.faces) > 0:
+			#looking for people without masks
 			people = mask_classifier.checkMask(people)
 			if len(people.faces) > 0:
+				#getting metadata
 				people = metadata_models.getMetaData(people)
 				drawNoMasks(people, frame)
 		frames += 1
