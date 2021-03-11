@@ -33,7 +33,7 @@ def drawNoMasks(people, img):
 	for face in people.people:
 		cv2.rectangle(img, face.start_pnt, face.end_pnt, BOUNDING_BOX_COLOR, LINE_THICKNESS)
 		text = 'F'
-		if face.gender:
+		if face.gender or face.beard:
 			text = 'M'
 		if face.glass:
 			text += ' G'

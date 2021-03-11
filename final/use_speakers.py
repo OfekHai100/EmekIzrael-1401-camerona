@@ -4,7 +4,7 @@ def play(person):
 	"""
 	This function is used to play a sound by given meta data
 	"""
-	if person.gender:
+	if person.gender or person.beard:
 		playsound("voices/man.mp3")
 	else:
 		playsound("voices/woman.mp3")
